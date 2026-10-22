@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1C2126">
+<title>Ankraj plakaları – TRİBÜN ANKRAJ</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📐</text></svg>">
+<style>
+:root{
+  --paper:#F4F5F3; --surface:#FFFFFF; --ink:#1C2126; --muted:#5B6570; --line:#D5D9DD;
+  --slab:#E3E6E8; --accent:#FFC400; --accent-ink:#1C2126; --ok:#12804A; --warn:#B3261E;
+  --sA:#C62828; --sB:#1F5FD6; --off:#C2185B; --offbg:#C2185B;
+  --t48:#4C8BF5; --t49:#F29D38; --t50:#2EAD5B; --t51:#A35BD6; --t90:#E0483E;
+  --str:#4A525A; --ghost:#D3D6D9; --ghost-line:#B9BEC3; --aln:#7B4FD0;
+  --bar:#1C2126; --bar-ink:#FFFFFF;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#14181C; --surface:#1D2329; --ink:#ECEFF1; --muted:#9AA4AE; --line:#343C44;
+    --slab:#232A31; --off:#F06292; --offbg:#D81B60; --str:#AEB7C0; --ghost:#2C333A; --ghost-line:#3E464E; --aln:#B39DFF; --bar:#0E1114; --bar-ink:#ECEFF1; --sB:#5B8FF0; --sA:#EF5350;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14181C; --surface:#1D2329; --ink:#ECEFF1; --muted:#9AA4AE; --line:#343C44;
+  --slab:#232A31; --off:#F06292; --offbg:#D81B60; --str:#AEB7C0; --ghost:#2C333A; --ghost-line:#3E464E; --aln:#B39DFF; --bar:#0E1114; --bar-ink:#ECEFF1; --sB:#5B8FF0; --sA:#EF5350;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{height:100%;margin:0}
+body{background:var(--paper);color:var(--ink);font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans","Helvetica Neue",Arial,sans-serif;
+  display:flex;flex-direction:column;overflow:hidden;-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+
+header{background:var(--bar);color:var(--bar-ink);padding:10px 14px;display:flex;align-items:baseline;gap:10px;flex:none}
+header h1{font-size:18px;margin:0;font-weight:700;letter-spacing:.01em}
+header span{font-size:13px;opacity:.7}
+
+main{flex:1;min-height:0;position:relative}
+.view{position:absolute;inset:0;display:none}
+.view.on{display:flex}
+
+/* ---------- PLAN ---------- */
+#v-plan{flex-direction:column}
+.rule{background:var(--accent);color:var(--accent-ink);font-size:14px;padding:7px 14px;flex:none;line-height:1.35}
+.rule b{font-weight:700}
+.stage{flex:1;min-height:0;position:relative;display:flex;flex-direction:column}
+.mapwrap{flex:1;min-width:0;min-height:0;position:relative}
+#map{position:absolute;inset:0;width:100%;height:100%;touch-action:none;user-select:none;-webkit-user-select:none;display:block;cursor:grab}
+#map text{font-family:inherit;pointer-events:none}
+#map text.offlab{paint-order:stroke;stroke:var(--paper);stroke-linejoin:round;fill:var(--off);font-weight:800}
+@media (prefers-reduced-motion:no-preference){#map .blink{animation:blink 1.4s ease-in-out infinite}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.12}}
+#map text.on{paint-order:stroke;stroke:var(--accent);stroke-linejoin:round;font-weight:800;fill:#1C2126}
+.zoom{position:absolute;right:10px;top:10px;display:flex;flex-direction:column;gap:6px}
+.zoom button{width:44px;height:44px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-size:22px;line-height:1;box-shadow:0 1px 2px rgba(0,0,0,.15)}
+.turn{position:absolute;left:10px;bottom:8px;font-size:12px;color:var(--muted);background:var(--surface);padding:3px 8px;border-radius:6px;border:1px solid var(--line)}
+@media (orientation:landscape){.turn{display:none}}
+.stage:has(.panel:not(.empty)) .turn{display:none}
+
+.panel{flex:none;background:var(--surface);border-top:1px solid var(--line);height:42%;overflow:auto;padding:14px 16px 18px;position:relative}
+.panel.empty{height:auto}
+@media (orientation:landscape) and (min-width:600px){
+  .stage{flex-direction:row}
+  .panel{height:auto;width:340px;border-top:0;border-left:1px solid var(--line)}
+  .panel.empty{width:240px}
+  .panel .pbody{grid-template-columns:1fr}
+  .panel .pbody .mini{order:-1;max-width:150px}
+}
+.hint{color:var(--muted);font-size:15px;margin:0}
+.hint b{color:var(--ink)}
+.close{position:absolute;right:8px;top:8px;width:44px;height:44px;border:0;background:none;font-size:26px;color:var(--muted)}
+.ptitle{display:flex;align-items:center;gap:10px;margin:0 44px 10px 0}
+.chip{width:18px;height:18px;border-radius:4px;border:1px solid rgba(0,0,0,.35);flex:none}
+.ptitle h2{font-size:22px;margin:0;line-height:1.1}
+.ptitle small{font-size:14px;color:var(--muted);display:block;font-weight:400}
+dl.facts{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:6px 0 12px;font-size:15.5px}
+dl.facts dt{color:var(--muted)}
+dl.facts dd{margin:0;font-weight:700;font-size:17px}
+dl.facts dd small{display:block;font-weight:400;font-size:13.5px;color:var(--muted)}
+.big{font-size:20px;font-weight:700}
+.mini{display:block;width:100%;max-width:220px;height:auto;margin:4px auto 10px}
+.pbody{display:grid;grid-template-columns:1fr 112px;gap:12px;align-items:start}
+.pbody .mini{margin:0}
+dl.facts{grid-template-columns:auto 1fr}
+.warn{background:color-mix(in srgb,var(--warn) 12%,transparent);color:var(--warn);border-radius:8px;padding:8px 10px;font-size:14.5px;margin:4px 0 10px}
+.nbr{display:grid;grid-template-columns:auto 1fr auto 1fr auto;align-items:center;gap:6px;margin:2px 0 2px}
+.nbtn{min-width:52px;min-height:42px;display:flex;align-items:center;justify-content:center;border-radius:8px;border:1px solid var(--line);background:var(--paper);font-weight:700;font-size:15.5px;padding:0 8px}
+.nbtn.cur{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.nbtn.none{color:var(--muted);font-weight:400}
+.nd{text-align:center;font-weight:700;font-size:15.5px;border-bottom:2px solid var(--line);padding-bottom:2px}
+.nbcap{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin:2px 0 12px}
+.offc,.card .note.offc{color:var(--off)}
+.badge{display:inline-block;background:color-mix(in srgb,var(--off) 12%,transparent);color:var(--off);border:1px solid var(--off);border-radius:6px;padding:0 6px;font-weight:800;font-size:14px;line-height:1.35;white-space:nowrap}
+.offbanner{background:color-mix(in srgb,var(--off) 12%,var(--surface));color:var(--off);border-left:5px solid var(--off);border-radius:8px;padding:8px 12px;font-weight:800;font-size:17px;margin:0 0 10px}
+.offbanner small{display:block;font-weight:500;font-size:14px;color:var(--ink);margin-top:2px}
+.plist{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.plist button{display:flex;align-items:center;gap:6px;min-height:40px;padding:4px 10px;border-radius:8px;border:1px solid var(--line);background:var(--paper);font-size:14.5px}
+.plist .chip{width:14px;height:14px}
+
+/* ---------- LİSTE / POZ / GÖNYE ---------- */
+.scroll{flex:1;overflow:auto;padding:14px 14px 28px;-webkit-overflow-scrolling:touch}
+.scroll>*{max-width:760px;margin-left:auto;margin-right:auto}
+.row{background:var(--surface);border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden}
+.row h3{margin:0;font-size:15px;padding:9px 12px;background:color-mix(in srgb,var(--accent) 35%,var(--surface));display:flex;justify-content:space-between;gap:8px}
+.row h3 span{font-weight:400;color:var(--ink);opacity:.75}
+.item{display:flex;align-items:center;gap:10px;padding:6px 14px 6px 12px;border-top:1px solid var(--line)}
+.item:first-of-type{border-top:0}
+.item .go{flex:1;display:flex;align-items:center;gap:10px;background:none;border:0;padding:4px 0;text-align:left;min-height:44px}
+.item .go b{min-width:28px}
+.item .go .meta{color:var(--muted);font-size:14px}
+.item .go .dg{margin-left:auto;font-weight:700;font-size:14.5px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px}
+.card h3{margin:0 0 2px;font-size:18px;display:flex;align-items:center;gap:8px}
+.card p{margin:2px 0;font-size:14.5px;color:var(--muted)}
+.card .pair{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+.card .pair figure{margin:0;text-align:center;font-size:13px;color:var(--muted)}
+.card .note{color:var(--warn);font-weight:600;font-size:14px;margin-top:6px}
+.lead{font-size:15px;color:var(--muted);margin:0 0 12px}
+.gtable{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:12px}
+.gtable th{text-align:left;font-size:14px;padding:9px 12px;background:color-mix(in srgb,var(--accent) 35%,var(--surface))}
+.gtable td{padding:9px 12px;border-top:1px solid var(--line);font-size:15px}
+.gtable td:first-child{font-weight:700;width:52px}
+.gtable td:last-child{text-align:right;font-weight:700;font-size:16px}
+.gtable td.sub{color:var(--muted);font-size:14px}
+#gsvg text{paint-order:stroke;stroke:var(--surface);stroke-width:120px;stroke-linejoin:round}
+#gsvg{width:100%;height:auto;display:block;margin-bottom:12px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+
+/* ---------- TAB BAR ---------- */
+nav{flex:none;display:grid;grid-template-columns:repeat(4,1fr);background:var(--bar)}
+nav button{background:none;border:0;color:var(--bar-ink);opacity:.65;padding:10px 2px 11px;font-size:14px;font-weight:600;min-height:52px;border-top:3px solid transparent}
+nav button[aria-selected="true"]{opacity:1;border-top-color:var(--accent)}
+@media (max-height:500px){header{display:none}.rule{font-size:12.5px;padding:4px 12px}nav button{min-height:40px;padding:6px 2px}.panel .pbody .mini{max-width:100px}.ptitle h2{font-size:19px}}
+@media (prefers-reduced-motion:no-preference){.panel{transition:height .18s ease}}
+
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 10px 8px;background:var(--bar);flex:none}
+.seg button{border:1px solid rgba(255,255,255,.28);background:transparent;color:var(--bar-ink);border-radius:10px;min-height:46px;font-weight:700;font-size:15px;line-height:1.15;padding:4px 6px}
+.seg button small{display:block;font-weight:500;opacity:.75;font-size:12.5px}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.seg button[aria-pressed="true"] small{opacity:.85}
+body[data-tab="types"] .seg{display:none}
+.alnnote{background:color-mix(in srgb,var(--aln) 12%,var(--surface));border-left:4px solid var(--aln);border-radius:8px;padding:8px 10px;font-size:14.5px;margin:4px 0 10px}
+@media (max-height:500px){.seg{padding:0 8px 6px}.seg button{min-height:34px;font-size:13.5px}.seg button small{display:none}}
+</style>
+</head>
+<body>
+<header><h1>Ankraj plakaları</h1><span id="hsub">TRİBÜN ANKRAJ, 45 plaka</span></header>
+<div class="seg" aria-label="İp turu">
+  <button data-sys="duz" aria-pressed="true">1. tur: Düz<small>Poz 48 ve 90</small></button>
+  <button data-sys="yamuk" aria-pressed="false">2. tur: Yamuk<small>Poz 49, 50 ve 51</small></button>
+</div>
+<main>
+  <section class="view on" id="v-plan" aria-label="Plan">
+    <div class="rule">Siyah nokta iki ipin kesişimine gelir. <b>Plaka oradan yukarı ve binanın ortasına açılır.</b> Gri: diğer tur.</div>
+    <div class="stage">
+      <div class="mapwrap">
+        <svg id="map" role="img" aria-label="Ankraj yerleşim planı"></svg>
+        <div class="zoom">
+          <button id="zin" aria-label="Yakınlaştır">+</button>
+          <button id="zout" aria-label="Uzaklaştır">−</button>
+          <button id="zfit" aria-label="Tümünü göster" style="font-size:17px">⤢</button>
+        </div>
+        <div class="turn">Daha geniş görmek için telefonu yan çevirin</div>
+      </div>
+      <aside class="panel empty" id="panel" aria-live="polite"></aside>
+    </div>
+  </section>
+  <section class="view" id="v-list" aria-label="Sıralar"><div class="scroll" id="listbox"></div></section>
+  <section class="view" id="v-types" aria-label="Pozlar"><div class="scroll" id="typebox"></div></section>
+  <section class="view" id="v-gonye" aria-label="Gönye"><div class="scroll" id="gonyebox"></div></section>
+</main>
+<nav role="tablist">
+  <button role="tab" aria-selected="true" data-v="plan">Plan</button>
+  <button role="tab" aria-selected="false" data-v="list">Sıralar</button>
+  <button role="tab" aria-selected="false" data-v="types">Pozlar</button>
+  <button role="tab" aria-selected="false" data-v="gonye">Gönye</button>
+</nav>
+<script>
+const ALL={"duz":{"name":"Düz plakalar","poz":["48","90"],"GX":[0,2271.3,4544,5680,7680,9950,11086,13358.7,15630],"GY":[0,696.5,2254.2,2296.5,3896.5,4234,5496.5,6963.5],"GXr":[0,2271,4544,5680,7680,9950,11086,13359,15630],"GYr":[0,697,2254,2297,3897,4234,5497,6964],"P":[{"t":"90","v":[[350.2,-0.2],[0.2,0.2],[0.2,270.2],[350.2,270.2]],"b":[[35.0,35.0],[35.0,235.0],[315.0,35.0],[315.0,235.0]],"xi":0,"yi":0,"s":"L","d":0,"w":350,"h":270,"rx":0.0,"ry":0.0},{"t":"48","v":[[2541.5,270.2],[2541.1,0.2],[2271.1,0.2],[2271.1,270.2]],"b":[[2506.3,35.0],[2306.3,35.0],[2506.3,235.0],[2306.3,235.0]],"xi":1,"yi":0,"s":"L","d":2271,"w":270,"h":270,"rx":2271.3,"ry":0.0},{"t":"48","v":[[4814.2,270.2],[4814.2,0.2],[4544.2,0.2],[4544.2,270.2]],"b":[[4779.0,35.0],[4579.0,35.0],[4779.0,235.0],[4579.0,235.0]],"xi":2,"yi":0,"s":"L","d":4544,"w":270,"h":270,"rx":4544.0,"ry":0.0},{"t":"48","v":[[10815.8,0.2],[10816.2,270.2],[11086.2,269.8],[11086.2,0.2]],"b":[[10851.0,235.0],[11051.0,235.0],[10851.0,35.0],[11051.0,35.0]],"xi":6,"yi":0,"s":"R","d":11086,"w":270,"h":270,"rx":11086.0,"ry":0.0},{"t":"48","v":[[13088.5,0.2],[13088.9,270.2],[13358.9,269.8],[13358.9,0.2]],"b":[[13123.7,235.0],[13323.7,235.0],[13123.7,35.0],[13323.7,35.0]],"xi":7,"yi":0,"s":"R","d":13359,"w":270,"h":270,"rx":13358.7,"ry":0.0},{"t":"90","v":[[15630.2,-0.2],[15280.2,0.2],[15280.2,270.2],[15630.2,270.2]],"b":[[15315.0,35.0],[15315.0,235.0],[15595.0,35.0],[15595.0,235.0]],"xi":8,"yi":0,"s":"R","d":15630,"w":350,"h":270,"rx":15630.0,"ry":0.0},{"t":"48","v":[[7950.2,696.3],[7680.2,696.7],[7680.2,966.7],[7950.2,966.7]],"b":[[7715.0,731.5],[7715.0,931.5],[7915.0,731.5],[7915.0,931.5]],"xi":4,"yi":1,"s":"L","d":7712,"w":270,"h":270,"rx":7680.0,"ry":696.5},{"t":"90","v":[[350.2,2254.0],[0.2,2254.4],[0.2,2524.4],[350.2,2524.4]],"b":[[35.0,2289.2],[35.0,2489.2],[315.0,2289.2],[315.0,2489.2]],"xi":0,"yi":2,"s":"L","d":2254,"w":350,"h":270,"rx":0.0,"ry":2254.2},{"t":"90","v":[[15630.2,2254.0],[15280.2,2254.4],[15280.2,2524.4],[15630.2,2524.4]],"b":[[15315.0,2289.2],[15315.0,2489.2],[15595.0,2289.2],[15595.0,2489.2]],"xi":8,"yi":2,"s":"R","d":15792,"w":350,"h":270,"rx":15630.0,"ry":2254.2},{"t":"48","v":[[5950.2,2296.3],[5680.2,2296.7],[5680.2,2566.7],[5950.2,2566.7]],"b":[[5715.0,2331.5],[5715.0,2531.5],[5915.0,2331.5],[5915.0,2531.5]],"xi":3,"yi":3,"s":"L","d":6127,"w":270,"h":270,"rx":5680.0,"ry":2296.5},{"t":"48","v":[[7950.2,2296.3],[7680.2,2296.7],[7680.2,2566.7],[7950.2,2566.7]],"b":[[7715.0,2331.5],[7715.0,2531.5],[7915.0,2331.5],[7915.0,2531.5]],"xi":4,"yi":3,"s":"L","d":8016,"w":270,"h":270,"rx":7680.0,"ry":2296.5},{"t":"48","v":[[9950.2,2296.3],[9680.2,2296.7],[9680.2,2566.7],[9950.2,2566.7]],"b":[[9715.0,2331.5],[9715.0,2531.5],[9915.0,2331.5],[9915.0,2531.5]],"xi":5,"yi":3,"s":"R","d":10212,"w":270,"h":270,"rx":9950.0,"ry":2296.5},{"t":"48","v":[[5950.2,3896.7],[5680.2,3896.7],[5680.2,4166.7],[5950.2,4166.7]],"b":[[5715.0,3931.5],[5715.0,4131.5],[5915.0,3931.5],[5915.0,4131.5]],"xi":3,"yi":4,"s":"L","d":6888,"w":270,"h":270,"rx":5680.0,"ry":3896.5},{"t":"48","v":[[7950.2,3896.7],[7680.2,3896.7],[7680.2,4166.7],[7950.2,4166.7]],"b":[[7715.0,3931.5],[7715.0,4131.5],[7915.0,3931.5],[7915.0,4131.5]],"xi":4,"yi":4,"s":"L","d":8612,"w":270,"h":270,"rx":7680.0,"ry":3896.5},{"t":"48","v":[[9950.2,3896.7],[9680.2,3896.7],[9680.2,4166.7],[9950.2,4166.7]],"b":[[9715.0,3931.5],[9715.0,4131.5],[9915.0,3931.5],[9915.0,4131.5]],"xi":5,"yi":4,"s":"R","d":10686,"w":270,"h":270,"rx":9950.0,"ry":3896.5},{"t":"90","v":[[350.2,4234.2],[0.2,4234.2],[0.2,4504.2],[350.2,4504.2]],"b":[[35.0,4269.0],[35.0,4469.0],[315.0,4269.0],[315.0,4469.0]],"xi":0,"yi":5,"s":"L","d":4234,"w":350,"h":270,"rx":0.0,"ry":4234.0},{"t":"90","v":[[15630.2,4234.2],[15280.2,4234.2],[15280.2,4504.2],[15630.2,4504.2]],"b":[[15315.0,4269.0],[15315.0,4469.0],[15595.0,4269.0],[15595.0,4469.0]],"xi":8,"yi":5,"s":"R","d":16193,"w":350,"h":270,"rx":15630.0,"ry":4234.0},{"t":"48","v":[[5950.2,5496.7],[5680.2,5496.7],[5680.2,5766.7],[5950.2,5766.7]],"b":[[5715.0,5531.5],[5715.0,5731.5],[5915.0,5531.5],[5915.0,5731.5]],"xi":3,"yi":6,"s":"L","d":7904,"w":270,"h":270,"rx":5680.0,"ry":5496.5},{"t":"48","v":[[7950.2,5496.7],[7680.2,5496.7],[7680.2,5766.7],[7950.2,5766.7]],"b":[[7715.0,5531.5],[7715.0,5731.5],[7915.0,5531.5],[7915.0,5731.5]],"xi":4,"yi":6,"s":"L","d":9444,"w":270,"h":270,"rx":7680.0,"ry":5496.5},{"t":"48","v":[[9950.2,5496.7],[9680.2,5496.7],[9680.2,5766.7],[9950.2,5766.7]],"b":[[9715.0,5531.5],[9715.0,5731.5],[9915.0,5531.5],[9915.0,5731.5]],"xi":5,"yi":6,"s":"R","d":11367,"w":270,"h":270,"rx":9950.0,"ry":5496.5},{"t":"48","v":[[5950.2,6963.3],[5680.2,6963.7],[5680.2,7233.7],[5950.2,7233.7]],"b":[[5715.0,6998.5],[5715.0,7198.5],[5915.0,6998.5],[5915.0,7198.5]],"xi":3,"yi":7,"s":"L","d":8986,"w":270,"h":270,"rx":5680.0,"ry":6963.5},{"t":"48","v":[[7950.2,6963.3],[7680.2,6963.7],[7680.2,7233.7],[7950.2,7233.7]],"b":[[7715.0,6998.5],[7715.0,7198.5],[7915.0,6998.5],[7915.0,7198.5]],"xi":4,"yi":7,"s":"L","d":10367,"w":270,"h":270,"rx":7680.0,"ry":6963.5},{"t":"48","v":[[9950.2,6963.3],[9680.2,6963.7],[9680.2,7233.7],[9950.2,7233.7]],"b":[[9715.0,6998.5],[9715.0,7198.5],[9915.0,6998.5],[9915.0,7198.5]],"xi":5,"yi":7,"s":"R","d":12145,"w":270,"h":270,"rx":9950.0,"ry":6963.5}],"F":{"X":15630,"Y":6964,"diag":17111,"seg":[5680,4270,5680],"segd":[8986,8168,8986],"gx":[0,5680,9950,15630]},"AL":[]},"yamuk":{"name":"Yamuk plakalar","poz":["49","50","51"],"GX":[0,426.1,1463.4,2594.8,2643.6,3251.6,3726.2,3914.4,4577.1,4994.3,5239.8,5872,9758,10390.2,10635.7,11052.9,11715.6,11903.8,12378.4,12986.4,13035.2,14166.5,15203.9],"GY":[0,295.7,659.3,1402.5,2259.3,2533.8,3665.2,3859.3,4702.5,5459.3,6927.1],"GXr":[0,426,1463,2595,2644,3252,3726,3914,4577,4994,5240,5872,9758,10390,10636,11053,11716,11904,12378,12986,13035,14167,15204],"GYr":[0,296,659,1403,2259,2534,3665,3859,4703,5459,6927],"P":[{"t":"51","v":[[5196.7,295.8],[4994.3,295.8],[4994.3,437.4],[5169.9,437.4],[5196.7,373.0]],"b":[[5150.9,391.8],[5040.1,345.8]],"xi":9,"yi":1,"s":"L","d":5003,"w":202,"h":142,"rx":4994.3,"ry":295.7},{"t":"51","v":[[10460.1,437.4],[10635.7,437.4],[10635.7,295.8],[10433.3,295.8],[10433.3,373.0]],"b":[[10479.1,391.8],[10589.9,345.8]],"xi":14,"yi":1,"s":"R","d":10640,"w":202,"h":142,"rx":10635.7,"ry":295.7},{"t":"50","v":[[5592.6,659.3],[5239.8,659.3],[5239.8,1012.1],[5489.4,1012.1],[5592.6,762.5]],"b":[[5362.1,705.0],[5285.6,889.8],[5546.9,781.6],[5470.4,966.3]],"xi":10,"yi":2,"s":"L","d":5281,"w":353,"h":353,"rx":5239.8,"ry":659.3},{"t":"51","v":[[6074.4,659.4],[5872.0,659.4],[5872.0,801.0],[6047.6,801.0],[6074.4,736.6]],"b":[[6028.6,755.3],[5917.7,709.4]],"xi":11,"yi":2,"s":"L","d":5909,"w":202,"h":142,"rx":5872.0,"ry":659.3},{"t":"51","v":[[9582.4,801.0],[9758.0,801.0],[9758.0,659.4],[9555.6,659.4],[9555.6,736.6]],"b":[[9601.4,755.3],[9712.3,709.4]],"xi":12,"yi":2,"s":"R","d":9780,"w":202,"h":142,"rx":9758.0,"ry":659.3},{"t":"50","v":[[10140.6,1012.1],[10390.2,1012.1],[10390.2,659.3],[10037.4,659.3],[10037.4,762.5]],"b":[[10267.9,705.0],[10344.4,889.8],[10083.1,781.6],[10159.6,966.3]],"xi":13,"yi":2,"s":"R","d":10411,"w":353,"h":353,"rx":10390.2,"ry":659.3},{"t":"49","v":[[4107.9,1402.6],[3726.3,1402.6],[3726.3,1784.2],[3917.1,1784.2],[4107.9,1593.4]],"b":[[3917.1,1452.0],[3775.7,1593.4],[4058.5,1593.4],[3917.1,1734.8]],"xi":6,"yi":3,"s":"L","d":3981,"w":382,"h":382,"rx":3726.2,"ry":1402.5},{"t":"49","v":[[11712.9,1784.2],[11903.7,1784.2],[11903.7,1402.6],[11522.1,1402.6],[11522.1,1593.4]],"b":[[11712.9,1452.0],[11854.3,1593.4],[11571.5,1593.4],[11712.9,1734.8]],"xi":17,"yi":3,"s":"R","d":11986,"w":382,"h":382,"rx":11903.8,"ry":1402.5},{"t":"50","v":[[4929.9,2259.3],[4577.1,2259.3],[4577.1,2612.1],[4826.7,2612.1],[4929.9,2362.5]],"b":[[4699.4,2305.0],[4622.8,2489.8],[4884.1,2381.5],[4807.6,2566.3]],"xi":8,"yi":4,"s":"L","d":5104,"w":353,"h":353,"rx":4577.1,"ry":2259.3},{"t":"50","v":[[10803.3,2612.1],[11052.9,2612.1],[11052.9,2259.3],[10700.1,2259.3],[10700.1,2362.5]],"b":[[10930.6,2305.0],[11007.2,2489.8],[10745.8,2381.5],[10822.4,2566.3]],"xi":15,"yi":4,"s":"R","d":11281,"w":353,"h":353,"rx":11052.9,"ry":2259.3},{"t":"49","v":[[2976.5,2534.0],[2594.9,2534.0],[2594.9,2915.6],[2785.7,2915.6],[2976.5,2724.8]],"b":[[2785.7,2583.3],[2644.3,2724.8],[2927.2,2724.8],[2785.7,2866.2]],"xi":3,"yi":5,"s":"L","d":3627,"w":382,"h":382,"rx":2594.8,"ry":2533.8},{"t":"49","v":[[12844.3,2915.6],[13035.1,2915.6],[13035.1,2534.0],[12653.5,2534.0],[12653.5,2724.8]],"b":[[12844.3,2583.3],[12985.7,2724.8],[12702.8,2724.8],[12844.3,2866.2]],"xi":20,"yi":5,"s":"R","d":13279,"w":382,"h":382,"rx":13035.2,"ry":2533.8},{"t":"49","v":[[1845.2,3665.3],[1463.6,3665.3],[1463.6,4046.9],[1654.4,4046.9],[1845.2,3856.1]],"b":[[1654.4,3714.7],[1512.9,3856.1],[1795.8,3856.1],[1654.4,3997.6]],"xi":2,"yi":6,"s":"L","d":3947,"w":382,"h":382,"rx":1463.5,"ry":3665.2},{"t":"49","v":[[13975.6,4046.9],[14166.4,4046.9],[14166.4,3665.3],[13784.8,3665.3],[13784.8,3856.1]],"b":[[13975.6,3714.7],[14117.0,3856.1],[13834.2,3856.1],[13975.6,3997.6]],"xi":21,"yi":6,"s":"R","d":14633,"w":382,"h":382,"rx":14166.5,"ry":3665.2},{"t":"50","v":[[4267.2,3859.3],[3914.4,3859.3],[3914.4,4212.1],[4164.0,4212.1],[4267.2,3962.5]],"b":[[4036.6,3905.0],[3960.1,4089.8],[4221.4,3981.5],[4144.9,4166.3]],"xi":7,"yi":7,"s":"L","d":5497,"w":353,"h":353,"rx":3914.4,"ry":3859.3},{"t":"50","v":[[11466.0,4212.1],[11715.6,4212.1],[11715.6,3859.3],[11362.8,3859.3],[11362.8,3962.5]],"b":[[11593.4,3905.0],[11669.9,4089.8],[11408.6,3981.5],[11485.1,4166.3]],"xi":16,"yi":7,"s":"R","d":12335,"w":353,"h":353,"rx":11715.6,"ry":3859.3},{"t":"49","v":[[807.8,4702.7],[426.2,4702.7],[426.2,5084.3],[617.0,5084.3],[807.8,4893.5]],"b":[[617.0,4752.0],[475.6,4893.5],[758.5,4893.5],[617.0,5034.9]],"xi":1,"yi":8,"s":"L","d":4722,"w":382,"h":382,"rx":426.1,"ry":4702.5},{"t":"49","v":[[15013.0,5084.3],[15203.8,5084.3],[15203.8,4702.7],[14822.2,4702.7],[14822.2,4893.5]],"b":[[15013.0,4752.0],[15154.4,4893.5],[14871.5,4893.5],[15013.0,5034.9]],"xi":22,"yi":8,"s":"R","d":15915,"w":382,"h":382,"rx":15203.9,"ry":4702.5},{"t":"50","v":[[3604.4,5459.3],[3251.6,5459.3],[3251.6,5812.1],[3501.2,5812.1],[3604.4,5562.5]],"b":[[3373.9,5505.0],[3297.4,5689.8],[3558.7,5581.5],[3482.1,5766.3]],"xi":5,"yi":9,"s":"L","d":6354,"w":353,"h":353,"rx":3251.6,"ry":5459.3},{"t":"50","v":[[12128.8,5812.1],[12378.4,5812.1],[12378.4,5459.3],[12025.6,5459.3],[12025.6,5562.5]],"b":[[12256.1,5505.0],[12332.6,5689.8],[12071.3,5581.5],[12147.9,5766.3]],"xi":18,"yi":9,"s":"R","d":13529,"w":353,"h":353,"rx":12378.4,"ry":5459.3},{"t":"50","v":[[2996.4,6927.1],[2643.6,6927.1],[2643.6,7279.9],[2893.2,7279.9],[2996.4,7030.3]],"b":[[2765.9,6972.9],[2689.3,7157.7],[2950.7,7049.4],[2874.1,7234.2]],"xi":4,"yi":10,"s":"L","d":7414,"w":353,"h":353,"rx":2643.6,"ry":6927.1},{"t":"50","v":[[12736.8,7279.9],[12986.4,7279.9],[12986.4,6927.1],[12633.6,6927.1],[12633.6,7030.3]],"b":[[12864.1,6972.9],[12940.7,7157.7],[12679.3,7049.4],[12755.9,7234.2]],"xi":19,"yi":10,"s":"R","d":14718,"w":353,"h":353,"rx":12986.4,"ry":6927.1}],"F":{"X":15204,"Y":6927,"diag":16708,"seg":[5240,5150,4814],"segd":[8686,8632,8435],"gx":[0,5240,10390,15204]},"AL":[{"t":"49","s":"L","a":[426.1,4702.5],"b":[3726.2,1402.5],"pts":[[426.1,4702.5],[1463.5,3665.2],[2594.8,2533.8],[3726.2,1402.5]]},{"t":"49","s":"R","a":[11903.8,1402.5],"b":[15203.9,4702.5],"pts":[[11903.8,1402.5],[13035.2,2533.8],[14166.5,3665.2],[15203.9,4702.5]]},{"t":"50","s":"L","a":[2643.6,6927.1],"b":[5239.8,659.3],"pts":[[2643.6,6927.1],[3251.6,5459.3],[3914.4,3859.3],[4577.1,2259.3],[5239.8,659.3]]},{"t":"50","s":"R","a":[10390.2,659.3],"b":[12986.4,6927.1],"pts":[[10390.2,659.3],[11052.9,2259.3],[11715.6,3859.3],[12378.4,5459.3],[12986.4,6927.1]]}]}};
+let cur='duz', D=ALL.duz;
+const NS='http://www.w3.org/2000/svg';
+const TN={'48':'270 × 270','49':'382 × 382, pahlı','50':'353 × 353, pahlı','51':'202 × 142, pahlı','90':'350 × 270'};
+const TCOL=t=>`var(--t${t})`;
+const SIDE={L:'sol-alt',R:'sağ-alt'};
+const TUR=k=>k==='duz'?'1. tur':'2. tur';
+const el=(tag,attrs={},parent)=>{const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e};
+const $=s=>document.querySelector(s);
+const fmt=n=>String(n);
+const ipName=(ax,v)=>v===0?`Sabit ${ax==='x'?'dikey':'yatay'} ip (0)`:`${ax==='x'?'Dikey':'Yatay'} ip ${v}`;
+const other=()=>cur==='duz'?ALL.yamuk:ALL.duz;
+
+/* ---------- PLAN ---------- */
+const svg=$('#map');
+const gSlab=el('g',{},svg), gGhost=el('g',{},svg), gStr=el('g',{},svg), gAln=el('g',{},svg), gHi=el('g',{},svg), gPl=el('g',{},svg), gDot=el('g',{},svg), gLab=el('g',{},svg), gTop=el('g',{},svg);
+let scaled=[], strX=[], strY=[], labX=[], labY=[], plates=[], alnLabs=[], aPt=null;
+const hiScale=[], hiLines=[];
+function lbl(x,y,txt,px,fill,anchor='middle',weight=700,parent=gLab){
+  const t=el('text',{x,y,'text-anchor':anchor,'dominant-baseline':'middle',fill,'font-weight':weight},parent);t.textContent=txt;scaled.push({e:t,px});return t;}
+function ext(ax,i,fs){
+  if(ax==='x'){const l=labX[i];return [D.GX[i],l.y-0.62*fs,D.GX[i],-7450];}
+  const l=labY[i];return [l.x+0.3*fs,-D.GY[i],16080,-D.GY[i]];
+}
+function setLine(e,a){e.setAttribute('x1',a[0]);e.setAttribute('y1',a[1]);e.setAttribute('x2',a[2]);e.setAttribute('y2',a[3]);}
+function labOn(set){
+  labX.concat(labY).forEach((l,j)=>{const key=(j<labX.length?'x'+j:'y'+(j-labX.length));
+    const on=set&&set.has(key); l.e.classList.toggle('on',!!on); l.e.style.opacity=set&&!on?'.4':'';});
+}
+function build(){
+  [gSlab,gGhost,gStr,gAln,gHi,gPl,gDot,gLab,gTop].forEach(g=>g.innerHTML='');
+  scaled=[];strX=[];strY=[];labX=[];labY=[];plates=[];alnLabs=[];hiScale.length=0;hiLines.length=0;
+  el('rect',{x:-100,y:-7311,width:15830,height:7401,fill:'var(--slab)',stroke:'var(--line)','vector-effect':'non-scaling-stroke'},gSlab);
+  el('line',{x1:7815,y1:450,x2:7815,y2:-7450,stroke:'var(--muted)','stroke-dasharray':'6 4','vector-effect':'non-scaling-stroke','stroke-width':1},gSlab);
+  lbl(7815,-7600,'bina ortası',11,'var(--muted)','middle',600);
+  other().P.forEach(p=>el('polygon',{points:p.v.map(v=>v[0]+','+(-v[1])).join(' '),fill:'var(--ghost)',stroke:'var(--ghost-line)','stroke-width':1,'vector-effect':'non-scaling-stroke'},gGhost));
+  D.GX.forEach((g,i)=>{const sab=g===0; strX.push(el('line',{stroke:sab?'var(--sA)':'var(--str)','stroke-width':sab?2.4:1.1,'vector-effect':'non-scaling-stroke',opacity:sab?1:.8},gStr));
+    const y=[700,1150,1600][i%3]; labX.push({x:g,y,e:lbl(g,y,sab?'0':String(D.GXr[i]),12,sab?'var(--sA)':'var(--str)')});});
+  D.GY.forEach((g,i)=>{const sab=g===0; strY.push(el('line',{stroke:sab?'var(--sA)':'var(--str)','stroke-width':sab?2.4:1.1,'vector-effect':'non-scaling-stroke',opacity:sab?1:.8},gStr));
+    const x=[-650,-1450][i%2]; labY.push({x,y:-g,e:lbl(x,-g,sab?'0':String(D.GYr[i]),12,sab?'var(--sA)':'var(--str)','end')});});
+  // aynı hizada
+  D.AL.forEach(a=>{
+    const [x0,y0]=a.a,[x1,y1]=a.b, L=Math.hypot(x1-x0,y1-y0), ux=(x1-x0)/L, uy=(y1-y0)/L;
+    el('line',{x1:x0-ux*500,y1:-(y0-uy*500),x2:x1+ux*500,y2:-(y1+uy*500),stroke:'var(--aln)','stroke-width':1.6,'stroke-dasharray':'8 3 2 3','vector-effect':'non-scaling-stroke'},gAln);
+    let nx=-uy,ny=ux; const sgn=a.s==='L'?1:-1; if(nx*sgn>0||(nx===0&&ny>0)){nx=-nx;ny=-ny;}
+    const mx=(x0+x1)/2+nx*260, my=(y0+y1)/2+ny*260; let ang=-Math.atan2(y1-y0,x1-x0)*180/Math.PI; if(ang>90)ang-=180; if(ang<-90)ang+=180;
+    const t=lbl(mx,-my,`Poz ${a.t} aynı hizada`,11,'var(--aln)','middle',700,gAln); t.setAttribute('transform',`rotate(${ang} ${mx} ${-my})`); t.classList.add('alnlab'); alnLabs.push(t);
+  });
+  aPt=el('circle',{cx:0,cy:0,r:80,fill:'var(--sA)'},gTop); hiScale.push({e:aPt,attr:'r',px:6,keep:true});
+  const aL=lbl(-260,330,'A',15,'var(--sA)','end',800);
+  plates=D.P.map((p,i)=>{
+    const g=el('g',{},gPl);
+    const poly=el('polygon',{points:p.v.map(v=>v[0]+','+(-v[1])).join(' '),fill:TCOL(p.t),stroke:'var(--ink)','stroke-width':1,'vector-effect':'non-scaling-stroke'},g);
+    p.b.forEach(b=>el('circle',{cx:b[0],cy:-b[1],r:14,fill:'#fff'},g));
+    const xs=p.v.map(v=>v[0]), ys=p.v.map(v=>v[1]);
+    const bb={x0:Math.min(...xs),x1:Math.max(...xs),y0:Math.min(...ys),y1:Math.max(...ys)};
+    const dot=el('circle',{cx:p.rx,cy:-p.ry,r:60,fill:'#000',stroke:'var(--accent)','stroke-width':1.5,'vector-effect':'non-scaling-stroke'},gDot);
+    const t=lbl((bb.x0+bb.x1)/2,-bb.y1-170,p.t,11,'var(--ink)','middle',700,gLab);
+    return {g,poly,dot,bb,rx:p.rx,ry:p.ry,t};
+  });
+  $('#hsub').textContent=`TRİBÜN ANKRAJ, ${TUR(cur)}: ${D.P.length} plaka`;
+}
+let view={s:0.02,ox:0,oy:0};
+let selection=null;
+function size(){const r=svg.getBoundingClientRect();return {w:r.width,h:r.height}}
+function render(){
+  const {w,h}=size(); if(!w||!h) return;
+  svg.setAttribute('viewBox',`${view.ox} ${view.oy} ${w/view.s} ${h/view.s}`);
+  const k=1/view.s, lf=view.s<0.03?0.8:1;
+  scaled.forEach(o=>o.e.setAttribute('font-size',o.px*k*lf*(o.e.classList.contains('on')?1.25:1)));
+  const fs=12*k*lf;
+  strX.forEach((e,i)=>setLine(e,ext('x',i,fs))); strY.forEach((e,i)=>setLine(e,ext('y',i,fs)));
+  hiLines.forEach(h=>h.els.forEach(e=>setLine(e,ext(h.ax,h.i,fs))));
+  labX.concat(labY).forEach(l=>{if(l.e.classList.contains('on')) l.e.setAttribute('stroke-width',7*k); else l.e.removeAttribute('stroke-width');});
+  const showPl=view.s>0.045;
+  plates.forEach((pl,i)=>{pl.t.style.display=showPl?'':'none';
+    const sel=selection&&selection.kind==='plate'&&selection.i===i; pl.dot.setAttribute('r',(sel?7:4)*k);});
+  alnLabs.forEach(t=>t.style.display=view.s>0.03?'':'none');
+  hiScale.forEach(o=>o.e.setAttribute(o.attr,o.px*k));
+}
+function fit(){
+  const {w,h}=size(); const bx=-2600,by=-8000,bw=19500,bh=9900;
+  view.s=Math.min(w/bw,h/bh); view.ox=bx-(w/view.s-bw)/2; view.oy=by-(h/view.s-bh)/2; render();
+}
+function zoomAt(f,cx,cy){
+  const ns=Math.max(0.008,Math.min(1.2,view.s*f)); const mx=view.ox+cx/view.s, my=view.oy+cy/view.s;
+  view.s=ns; view.ox=mx-cx/ns; view.oy=my-cy/ns; render();
+}
+function centerOn(x,y,s){const {w,h}=size(); if(s) view.s=s; view.ox=x-w/2/view.s; view.oy=y-h/2/view.s; render();}
+$('#zin').onclick=()=>{const {w,h}=size();zoomAt(1.6,w/2,h/2)};
+$('#zout').onclick=()=>{const {w,h}=size();zoomAt(1/1.6,w/2,h/2)};
+$('#zfit').onclick=fit;
+
+const pts=new Map(); let gest=null;
+svg.addEventListener('pointerdown',e=>{svg.setPointerCapture(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY,x0:e.clientX,y0:e.clientY,t:Date.now()});
+  if(pts.size===2){const [a,b]=[...pts.values()];gest={d:Math.hypot(a.x-b.x,a.y-b.y),moved:true};} else gest={moved:false};});
+svg.addEventListener('pointermove',e=>{
+  const p=pts.get(e.pointerId); if(!p) return;
+  const r=svg.getBoundingClientRect();
+  if(pts.size===1){
+    const dx=e.clientX-p.x, dy=e.clientY-p.y;
+    if(Math.hypot(e.clientX-p.x0,e.clientY-p.y0)>8) gest.moved=true;
+    if(gest.moved){view.ox-=dx/view.s; view.oy-=dy/view.s; render();}
+    p.x=e.clientX;p.y=e.clientY;
+  } else if(pts.size===2){
+    p.x=e.clientX;p.y=e.clientY;
+    const [a,b]=[...pts.values()]; const d=Math.hypot(a.x-b.x,a.y-b.y);
+    const cx=(a.x+b.x)/2-r.left, cy=(a.y+b.y)/2-r.top;
+    if(gest.d) zoomAt(d/gest.d,cx,cy); gest.d=d; gest.moved=true;
+  }
+});
+function up(e){
+  const p=pts.get(e.pointerId); if(!p) return;
+  pts.delete(e.pointerId);
+  if(pts.size===0 && gest && !gest.moved && Date.now()-p.t<600){const r=svg.getBoundingClientRect(); tapAt(e.clientX-r.left,e.clientY-r.top);}
+  if(pts.size===1){gest={moved:true}; const q=[...pts.values()][0]; q.x0=q.x; q.y0=q.y;}
+}
+svg.addEventListener('pointerup',up); svg.addEventListener('pointercancel',e=>pts.delete(e.pointerId));
+svg.addEventListener('wheel',e=>{e.preventDefault();const r=svg.getBoundingClientRect();zoomAt(e.deltaY<0?1.2:1/1.2,e.clientX-r.left,e.clientY-r.top)},{passive:false});
+
+function tapAt(sx,sy){
+  const x=view.ox+sx/view.s, y=-(view.oy+sy/view.s);
+  const tol=v=>v*view.s;
+  let best=null;
+  plates.forEach((pl,i)=>{const b=pl.bb; const dx=Math.max(b.x0-x,0,x-b.x1), dy=Math.max(b.y0-y,0,y-b.y1); const d=Math.hypot(dx,dy);
+    if(!best||d<best.d) best={d,i};});
+  if(best && tol(best.d)<20){ selectPlate(best.i); return; }
+  let lb=null;
+  labX.forEach((l,i)=>{const d=Math.hypot(l.x-x,-l.y-y); if(!lb||d<lb.d) lb={d,ax:'x',i};});
+  labY.forEach((l,i)=>{const d=Math.hypot(l.x-x,-l.y-y); if(!lb||d<lb.d) lb={d,ax:'y',i};});
+  if(lb && tol(lb.d)<22){ selectString(lb.ax,lb.i); return; }
+  let sb=null;
+  if(y>-2000&&y<7450) D.GX.forEach((g,i)=>{const d=Math.abs(g-x); if(!sb||d<sb.d) sb={d,ax:'x',i};});
+  if(x>-2600&&x<16080) D.GY.forEach((g,i)=>{const d=Math.abs(g-y); if(!sb||d<sb.d) sb={d,ax:'y',i};});
+  if(sb && tol(sb.d)<14){ selectString(sb.ax,sb.i); return; }
+  clearSel();
+}
+
+/* ---------- seçim ---------- */
+const panel=$('#panel');
+function hint(){panel.className='panel empty';panel.innerHTML=`<p class="hint"><b>${TUR(cur)}: ${D.name.toLowerCase()}.</b> <b>Bir plakaya</b> dokunun: ölçüleri ve oturan köşe. <b>Bir ipe</b> dokunun: o ipe oturan plakalar. İp adları sabit ipten mesafedir (mm).</p>`;}
+function clearHi(){gHi.innerHTML='';[...gTop.querySelectorAll('.tmp')].forEach(e=>e.remove());hiLines.length=0;
+  for(let i=hiScale.length-1;i>=0;i--) if(!hiScale[i].keep) hiScale.splice(i,1);
+  labOn(null);plates.forEach(pl=>{pl.g.style.opacity='';});strX.concat(strY).forEach(s=>s.style.opacity='');}
+function clearSel(){selection=null;clearHi();hint();render();}
+function hiString(ax,i){
+  const a=el('line',{stroke:'var(--ink)','stroke-width':6,'vector-effect':'non-scaling-stroke','stroke-linecap':'round'},gHi);
+  const b=el('line',{stroke:'var(--accent)','stroke-width':3.5,'vector-effect':'non-scaling-stroke','stroke-linecap':'round'},gHi);
+  hiLines.push({ax,i,els:[a,b]});
+}
+function dimOthers(keep){plates.forEach((pl,i)=>pl.g.style.opacity=keep.has(i)?'':'.3');strX.concat(strY).forEach(s=>s.style.opacity='.35');}
+function closeBtn(){return '<button class="close" aria-label="Kapat" onclick="clearSel()">×</button>';}
+function plateMini(p,big){
+  const s=p.s==='L'?1:-1, ox=p.rx, oy=p.ry;
+  const m=Math.max(p.w,p.h), mg=big?330:200, W=m+130+mg;
+  const vb=p.s==='L'?`${-mg} ${-(m+120)} ${W} ${W}`:`${-(m+130)} ${-(m+120)} ${W} ${W}`;
+  let h=`<svg class="mini" viewBox="${vb}" ${big?'':'width="200"'} aria-hidden="true">`;
+  h+=`<line x1="${-140*s}" y1="0" x2="${(m+60)*s}" y2="0" stroke="var(--str)" stroke-width="5" stroke-dasharray="16 10"/>`;
+  h+=`<line x1="0" y1="140" x2="0" y2="${-(m+60)}" stroke="var(--str)" stroke-width="5" stroke-dasharray="16 10"/>`;
+  h+=`<polygon points="${p.v.map(v=>(v[0]-ox)+','+(-(v[1]-oy))).join(' ')}" fill="${TCOL(p.t)}" stroke="currentColor" stroke-width="4"/>`;
+  p.b.forEach(b=>h+=`<circle cx="${b[0]-ox}" cy="${-(b[1]-oy)}" r="15" fill="#fff" stroke="currentColor" stroke-width="2"/>`);
+  h+=`<circle cx="0" cy="0" r="24" fill="#000" stroke="var(--accent)" stroke-width="6"/>`;
+  h+=`<text x="${-30*s}" y="62" font-size="44" fill="currentColor" text-anchor="${s>0?'end':'start'}" font-weight="700">${big?'yatay ip':D.GYr[p.yi]}</text>`;
+  h+=`<text x="${18*s}" y="${-(m+10)}" font-size="44" fill="currentColor" text-anchor="${s>0?'start':'end'}" font-weight="700">${big?'dikey ip':D.GXr[p.xi]}</text>`;
+  return h+'</svg>';
+}
+function selectPlate(i,zoom){
+  selection={kind:'plate',i}; clearHi();
+  const p=D.P[i], pl=plates[i];
+  hiString('x',p.xi); hiString('y',p.yi); labOn(new Set(['x'+p.xi,'y'+p.yi]));
+  const ln=el('line',{x1:0,y1:0,x2:pl.rx,y2:-pl.ry,stroke:'var(--sA)','stroke-width':2.5,'stroke-dasharray':'7 5','vector-effect':'non-scaling-stroke',class:'tmp'},gTop);
+  gTop.insertBefore(ln,gTop.firstChild);
+  dimOthers(new Set([i])); gPl.appendChild(pl.g);
+  const al=D.AL.find(a=>a.t===p.t&&a.s===p.s&&a.pts.some(q=>Math.abs(q[0]-p.rx)<1&&Math.abs(q[1]-p.ry)<1));
+  panel.className='panel';
+  panel.innerHTML=closeBtn()+
+   `<div class="ptitle"><span class="chip" style="background:${TCOL(p.t)}"></span><h2>Poz ${p.t}<small>${TN[p.t]}, ${p.b.length} delik, ${TUR(cur)}</small></h2></div>`+
+   `<div class="pbody"><dl class="facts num">
+     <dt>Oturan köşe</dt><dd>${SIDE[p.s]}</dd>
+     <dt>Dikey ip</dt><dd>${D.GXr[p.xi]}<small>sabit ipten ${D.GXr[p.xi]} mm</small></dd>
+     <dt>Yatay ip</dt><dd>${D.GYr[p.yi]}<small>sabit ipten ${D.GYr[p.yi]} mm</small></dd>
+     <dt>Çapraz</dt><dd>${p.d?`<span class="big" style="color:var(--sA)">${p.d} mm</span><small>A noktasından siyah noktaya</small>`:`<span style="color:var(--sA)">Siyah nokta tam A noktasında</span>`}</dd>
+   </dl>${plateMini(p)}</div>`+
+   (p.t==='90'?'<div class="warn">Uzun kenar (350) bina boyunca, yatay yönde.</div>':'')+
+   (p.s==='R'&&(p.t==='50'||p.t==='51')?'<div class="warn">Sol yarıdaki plakanın ters çevrilmiş hali.</div>':'')+
+   (al?`<div class="alnnote">Bu köşe, diğer ${al.pts.length-1} Poz ${p.t} köşesiyle aynı hizada (mor kesikli çizgi).</div>`:'');
+  if(zoom){const b=pl.bb; centerOn((b.x0+b.x1)/2,-(b.y0+b.y1)/2,Math.max(view.s,0.09));} else render();
+}
+function selectString(ax,i){
+  selection={kind:'string',ax,i}; clearHi(); hiString(ax,i); labOn(new Set([ax+i]));
+  const on=D.P.map((p,k)=>[p,k]).filter(([p])=>ax==='x'?p.xi===i:p.yi===i);
+  dimOthers(new Set(on.map(o=>o[1])));
+  const G=ax==='x'?D.GXr:D.GYr;
+  const nearIds=[i-1,i+1].filter(j=>j>=0&&j<G.length&&Math.abs(G[j]-G[i])<60).map(j=>G[j]);
+  const near=nearIds.length?[`Dikkat: ${nearIds.join(' ve ')} ipi çok yakın. Çivi etiketine bakın.`]:[];
+  const nb=j=>j>=0&&j<G.length?`<button class="nbtn" onclick="selectString('${ax}',${j})">${G[j]}</button>`:'<span class="nbtn none">—</span>';
+  const dist=j=>j>=0&&j<G.length?`<span class="nd num">${Math.abs(G[i]-G[j])} mm</span>`:'<span class="nd"></span>';
+  const strip=`<div class="nbr">${nb(i-1)}${dist(i-1)}<span class="nbtn cur">${G[i]}</span>${dist(i+1)}${nb(i+1)}</div>`+
+    `<div class="nbcap"><span>${ax==='x'?'← solundaki':'↓ altındaki'}</span><span>${ax==='x'?'sağındaki →':'üstündeki ↑'}</span></div>`;
+  panel.className='panel';
+  panel.innerHTML=closeBtn()+
+   `<div class="ptitle"><h2>${ipName(ax,G[i])}<small>${TUR(cur)}</small></h2></div>`+
+   `<dl class="facts num"><dt>Sabit ipten</dt><dd><span class="big">${G[i]} mm</span></dd></dl>`+
+   `<p class="hint" style="margin:0 0 4px">Yanındaki iplere uzaklık:</p>`+strip+
+   near.map(n=>`<div class="warn">${n}</div>`).join('')+
+   (on.length?`<p class="hint" style="margin-bottom:4px">Bu ipe oturan plakalar (${on.length}):</p><div class="plist">`+
+   on.map(([p,k])=>`<button onclick="selectPlate(${k},true)"><span class="chip" style="background:${TCOL(p.t)}"></span><b>${p.t}</b> ${ax==='x'?D.GYr[p.yi]:D.GXr[p.xi]}</button>`).join('')+'</div>'
+   :'<p class="hint">Bu ipe bu turda plaka oturmuyor; ölçü referansıdır.</p>');
+  render();
+}
+
+/* ---------- SIRALAR ---------- */
+function buildList(){
+  let h=`<p class="lead">${TUR(cur)}: ${D.name.toLowerCase()} (Poz ${D.poz.join(', ')}). Satıra dokunun, plaka planda gösterilir.</p>`;
+  D.GY.forEach((g,yi)=>{
+    const rows=D.P.map((p,k)=>[p,k]).filter(([p])=>p.yi===yi).sort((a,b)=>a[0].rx-b[0].rx); if(!rows.length) return;
+    h+=`<div class="row"><h3><b>${ipName('y',D.GYr[yi])}</b><span class="num">${rows.length} plaka</span></h3>`;
+    rows.forEach(([p,k])=>{
+      h+=`<div class="item"><button class="go" onclick="showOnPlan(${k})"><span class="chip" style="background:${TCOL(p.t)}"></span><b>${p.t}</b><span class="meta">dikey ${D.GXr[p.xi]}, ${SIDE[p.s]}</span><span class="dg num" style="color:var(--sA)">${p.d?'A '+p.d:'A noktası'}</span></button></div>`;
+    });
+    h+='</div>';
+  });
+  $('#listbox').innerHTML=h;
+}
+function showOnPlan(k){tab('plan');requestAnimationFrame(()=>selectPlate(k,true));}
+
+/* ---------- POZLAR ---------- */
+function buildTypes(){
+  let h='<p class="lead">Siyah nokta plakanın oturan köşesidir. Pahlı plakalarda kesik köşe her zaman yukarıya ve binanın ortasına bakar.</p><div class="cards">';
+  [['48','duz'],['90','duz'],['49','yamuk'],['50','yamuk'],['51','yamuk']].forEach(([t,k])=>{
+    const S=ALL[k], prev=D; D=S;
+    const L=S.P.find(p=>p.t===t&&p.s==='L'), R=S.P.find(p=>p.t===t&&p.s==='R');
+    const nL=S.P.filter(p=>p.t===t&&p.s==='L').length, n=S.P.filter(p=>p.t===t).length;
+    h+=`<div class="card"><h3><span class="chip" style="background:${TCOL(t)}"></span>Poz ${t}</h3><p class="num">${TN[t]}, ${L.b.length} delik, ${n} adet, ${TUR(k)}</p>`+
+       `<div class="pair"><figure>${plateMini(L,true)}Sol yarı (${nL})</figure><figure>${plateMini(R,true)}Sağ yarı (${n-nL})</figure></div>`+
+       (t==='90'?'<div class="note">Uzun kenar (350) yatay yönde.</div>':'')+
+       (t==='50'||t==='51'?'<div class="note">Sağ yarıdaki, soldakinin ters çevrilmiş hali.</div>':'')+'</div>';
+    D=prev;
+  });
+  $('#typebox').innerHTML=h+'</div>';
+}
+
+/* ---------- GÖNYE ---------- */
+function buildGonye(){
+  const F=D.F, X=F.X, Y=F.Y, gx=F.gx;
+  let s=`<svg id="gsvg" viewBox="-1500 ${-Y-1600} ${X+3000} ${Y+3000}" aria-label="Gönye çerçevesi">`;
+  D.GX.forEach(g=>s+=`<line x1="${g}" y1="250" x2="${g}" y2="${-Y-250}" stroke="var(--line)" stroke-width="18"/>`);
+  D.GY.forEach(g=>s+=`<line x1="-250" y1="${-g}" x2="${X+250}" y2="${-g}" stroke="var(--line)" stroke-width="18"/>`);
+  s+=`<rect x="0" y="${-Y}" width="${X}" height="${Y}" fill="none" stroke="currentColor" stroke-width="55"/>`;
+  gx.slice(1,-1).forEach(g=>s+=`<line x1="${g}" y1="300" x2="${g}" y2="${-Y-300}" stroke="currentColor" stroke-width="35" stroke-dasharray="160 100"/>`);
+  const cols=['#2CA02C','#9467BD','#E377C2'];
+  for(let i=0;i<3;i++){const a=gx[i],b=gx[i+1];s+=`<line x1="${a}" y1="0" x2="${b}" y2="${-Y}" stroke="${cols[i]}" stroke-width="40" stroke-dasharray="220 120"/><line x1="${a}" y1="${-Y}" x2="${b}" y2="0" stroke="${cols[i]}" stroke-width="40" stroke-dasharray="220 120"/>`;}
+  s+=`<line x1="0" y1="0" x2="${X}" y2="${-Y}" stroke="var(--sA)" stroke-width="60"/><line x1="${X}" y1="0" x2="0" y2="${-Y}" stroke="var(--sB)" stroke-width="60"/>`;
+  const nb=['A','E','G','B'], nt=['D','F','H','C'];
+  gx.forEach((g,i)=>{[[0,nb[i],650],[-Y,nt[i],-350]].forEach(([y,n,dy])=>{
+    s+=`<circle cx="${g}" cy="${y}" r="150" fill="${n==='A'?'var(--sA)':'#000'}" stroke="var(--accent)" stroke-width="40"/><text x="${g}" y="${y+dy}" font-size="700" font-weight="800" fill="${n==='A'?'var(--sA)':'currentColor'}" text-anchor="middle">${n}</text>`;});
+    s+=`<text x="${g}" y="1300" font-size="450" fill="var(--muted)" text-anchor="middle">${g}</text>`;});
+  for(let i=0;i<3;i++) s+=`<text x="${(gx[i]+gx[i+1])/2}" y="${-Y-1000}" font-size="480" font-weight="700" fill="${cols[i]}" text-anchor="middle">${F.segd[i]}</text>`;
+  s+=`<text x="${X*0.27}" y="${-Y*0.27-180}" font-size="560" font-weight="700" fill="var(--sA)" text-anchor="middle" transform="rotate(${-Math.atan2(Y,X)*180/Math.PI} ${X*0.27} ${-Y*0.27-180})">AC ${F.diag}</text>`;
+  s+=`<text x="${X*0.73}" y="${-Y*0.27-180}" font-size="560" font-weight="700" fill="var(--sB)" text-anchor="middle" transform="rotate(${Math.atan2(Y,X)*180/Math.PI} ${X*0.73} ${-Y*0.27-180})">BD ${F.diag}</text>`;
+  s+='</svg>';
+  const T=(title,rows)=>`<table class="gtable num"><tr><th colspan="3">${title}</th></tr>`+rows.map(r=>`<tr><td>${r[0]}</td><td class="sub">${r[1]}</td><td>${r[2]}</td></tr>`).join('')+'</table>';
+  const segn=[['A','E','D','F'],['E','G','F','H'],['G','B','H','C']];
+  const seg=[]; segn.forEach(([b0,b1,t0,t1],i)=>{seg.push([`${b0}${b1} / ${t0}${t1}`,'alt ve üst kenar',F.seg[i]]);seg.push([`${b0}${t1} / ${t0}${b1}`,'bölme çaprazları (eşit)',F.segd[i]]);});
+  $('#gonyebox').innerHTML=`<p class="lead">${TUR(cur)}: ${D.name.toLowerCase()}. Önce çerçeve gönyeye alınır. A, sabit iplerin kesişimidir. Ölçüler mm.</p>`+s+
+   T('1. Dış kenarlar',[['AB',`sabit ip (0) üstünde, 0 → ${X}`,X],['DC',`${Y} ipi üstünde, 0 → ${X}`,X],['AD',`sabit ip (0) üstünde, 0 → ${Y}`,Y],['BC',`${X} ipi üstünde, 0 → ${Y}`,Y]])+
+   T('2. Büyük çaprazlar (eşit olmalı)',[['AC','A → C',F.diag],['BD','B → D',F.diag]])+
+   T('3. Ara bölmeler',seg);
+}
+
+/* ---------- tur ve sekmeler ---------- */
+function setSys(k){
+  cur=k; D=ALL[k];
+  document.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.sys===k));
+  selection=null; build(); hint(); buildList(); buildGonye(); fit();
+}
+document.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>setSys(b.dataset.sys));
+function tab(v){
+  document.querySelectorAll('.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v));
+  document.body.dataset.tab=v;
+  if(v==='plan') requestAnimationFrame(render);
+}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>tab(b.dataset.v));
+let fitted=false;
+new ResizeObserver(()=>{if(!fitted){fit();fitted=true;}else render();}).observe(svg);
+build(); hint(); buildList(); buildTypes(); buildGonye();
+</script>
+
+<!-- Default Statcounter code for Tribun Ankraj
+https://burakakgulll.github.io/ankraj2 -->
+<script type="text/javascript">
+var sc_project=13361687; 
+var sc_invisible=1; 
+var sc_security="e84d48ff"; 
+</script>
+<script type="text/javascript"
+src="https://www.statcounter.com/counter/counter.js"
+async></script>
+<noscript><div class="statcounter"><a title="Web Analytics"
+href="https://statcounter.com/" target="_blank"><img
+class="statcounter"
+src="https://c.statcounter.com/13361687/0/e84d48ff/1/"
+alt="Web Analytics"
+referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
+<!-- End of Statcounter Code -->
+
+</body>
+</html>
